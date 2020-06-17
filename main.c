@@ -9,7 +9,7 @@ Please send email to lijunshi2015@163.com if you have any question.
 //#include <windows.h> //windows
 #include <unistd.h>  //linux
 
-//±ÈÈçÎÒÃÇ¶¨ÒåÁËĞ¡Ã÷Ò»ÌìµÄ×´Ì¬ÈçÏÂ
+//æ¯”å¦‚æˆ‘ä»¬å®šä¹‰äº†å°æ˜ä¸€å¤©çš„çŠ¶æ€å¦‚ä¸‹
 enum
 {
 	GET_UP,
@@ -19,7 +19,7 @@ enum
 	SLEEP,
 };
 
-//ÎÒÃÇ¶¨ÒåµÄÊÂ¼şÓĞÒÔÏÂ¼¸¸ö
+//æˆ‘ä»¬å®šä¹‰çš„äº‹ä»¶æœ‰ä»¥ä¸‹å‡ ä¸ª
 enum
 {
 	EVENT1 = 1,
@@ -30,22 +30,22 @@ enum
 
 typedef struct FsmTable_s
 {
-	int event;   //ÊÂ¼ş
-	int CurState;  //µ±Ç°×´Ì¬
-	void (*eventActFun)();  //º¯ÊıÖ¸Õë
-	int NextState;  //ÏÂÒ»¸ö×´Ì¬
+	int event;   //äº‹ä»¶
+	int CurState;  //å½“å‰çŠ¶æ€
+	void (*eventActFun)();  //å‡½æ•°æŒ‡é’ˆ
+	int NextState;  //ä¸‹ä¸€ä¸ªçŠ¶æ€
 }FsmTable_t;
 
 
 typedef struct FSM_s
 {
-	FsmTable_t* FsmTable;   //Ö¸ÏòµÄ×´Ì¬±í
-	int curState;  //FSMµ±Ç°Ëù´¦µÄ×´Ì¬
+	FsmTable_t* FsmTable;   //æŒ‡å‘çš„çŠ¶æ€è¡¨
+	int curState;  //FSMå½“å‰æ‰€å¤„çš„çŠ¶æ€
 
 }FSM_t;
 
 
-int g_max_num;  //×´Ì¬±íÀïº¬ÓĞµÄ×´Ì¬¸öÊı
+int g_max_num;  //çŠ¶æ€è¡¨é‡Œå«æœ‰çš„çŠ¶æ€ä¸ªæ•°
 
 
 
@@ -80,32 +80,32 @@ void Go2Bed()
 	printf("xiao ming goes to bed!\n");
 }
 
-/*×´Ì¬»ú×¢²á*/
+/*çŠ¶æ€æœºæ³¨å†Œ*/
 void FSM_Regist(FSM_t* pFsm, FsmTable_t* pTable)
 {
 	pFsm->FsmTable = pTable;
 }
 
-/*×´Ì¬Ç¨ÒÆ*/
+/*çŠ¶æ€è¿ç§»*/
 void FSM_StateTransfer(FSM_t* pFsm, int state)
 {
 	pFsm->curState = state;
 }
 
 
-/*ÊÂ¼ş´¦Àí*/
+/*äº‹ä»¶å¤„ç†*/
 void FSM_EventHandle(FSM_t* pFsm, int event)
 {
 	FsmTable_t* pActTable = pFsm->FsmTable;
-	void (*eventActFun)() = NULL;  //º¯ÊıÖ¸Õë³õÊ¼»¯Îª¿Õ
+	void (*eventActFun)() = NULL;  //å‡½æ•°æŒ‡é’ˆåˆå§‹åŒ–ä¸ºç©º
 	int NextState;
 	int CurState = pFsm->curState;
-	int flag = 0; //±êÊ¶ÊÇ·ñÂú×ãÌõ¼ş
+	int flag = 0; //æ ‡è¯†æ˜¯å¦æ»¡è¶³æ¡ä»¶
 
-	/*»ñÈ¡µ±Ç°¶¯×÷º¯Êı*/
+	/*è·å–å½“å‰åŠ¨ä½œå‡½æ•°*/
 	for (int i = 0; i<g_max_num; i++)
 	{
-		//µ±ÇÒ½öµ±µ±Ç°×´Ì¬ÏÂÀ´¸öÖ¸¶¨µÄÊÂ¼ş£¬ÎÒ²ÅÖ´ĞĞËü
+		//å½“ä¸”ä»…å½“å½“å‰çŠ¶æ€ä¸‹æ¥ä¸ªæŒ‡å®šçš„äº‹ä»¶ï¼Œæˆ‘æ‰æ‰§è¡Œå®ƒ
 		if (event == pActTable[i].event && CurState == pActTable[i].CurState)
 		{
 			flag = 1;
@@ -116,15 +116,15 @@ void FSM_EventHandle(FSM_t* pFsm, int event)
 	}
 
 
-	if (flag) //Èç¹ûÂú×ãÌõ¼şÁË
+	if (flag) //å¦‚æœæ»¡è¶³æ¡ä»¶äº†
 	{
-		/*¶¯×÷Ö´ĞĞ*/
+		/*åŠ¨ä½œæ‰§è¡Œ*/
 		if (eventActFun)
 		{
 			eventActFun();
 		}
 
-		//Ìø×ªµ½ÏÂÒ»¸ö×´Ì¬
+		//è·³è½¬åˆ°ä¸‹ä¸€ä¸ªçŠ¶æ€
 		FSM_StateTransfer(pFsm, NextState);
 	}
 	else
@@ -135,7 +135,7 @@ void FSM_EventHandle(FSM_t* pFsm, int event)
 
 FsmTable_t XiaoMingTable[] =
 {
-	//{µ½À´µÄÊÂ¼ş£¬µ±Ç°µÄ×´Ì¬£¬½«ÒªÒªÖ´ĞĞµÄº¯Êı£¬ÏÂÒ»¸ö×´Ì¬}
+	//{åˆ°æ¥çš„äº‹ä»¶ï¼Œå½“å‰çš„çŠ¶æ€ï¼Œå°†è¦è¦æ‰§è¡Œçš„å‡½æ•°ï¼Œä¸‹ä¸€ä¸ªçŠ¶æ€}
 	{ EVENT1,  SLEEP,           GetUp,        GET_UP },
 	{ EVENT2,  GET_UP,          Go2School,    GO_TO_SCHOOL },
 	{ EVENT3,  GO_TO_SCHOOL,    HaveLunch,    HAVE_LUNCH },
@@ -145,7 +145,7 @@ FsmTable_t XiaoMingTable[] =
 	//add your codes here
 };
 
-//³õÊ¼»¯FSM
+//åˆå§‹åŒ–FSM
 void InitFsm(FSM_t* pFsm)
 {
 	g_max_num = sizeof(XiaoMingTable) / sizeof(FsmTable_t);
@@ -154,7 +154,7 @@ void InitFsm(FSM_t* pFsm)
 }
 
 
-//²âÊÔÓÃµÄ
+//æµ‹è¯•ç”¨çš„
 void test(int *event)
 {
 	if (*event == 3)
@@ -174,14 +174,15 @@ int main()
 	FSM_t fsm;
 	InitFsm(&fsm);
 	int event = EVENT1; 
-	//Ğ¡Ã÷µÄÒ»Ìì,ÖÜ¶ø¸´Ê¼µÄÒ»ÌìÓÖÒ»Ìì£¬½øĞĞ×ÅÏàÍ¬µÄ»î¶¯
+	//å°æ˜çš„ä¸€å¤©,å‘¨è€Œå¤å§‹çš„ä¸€å¤©åˆä¸€å¤©ï¼Œè¿›è¡Œç€ç›¸åŒçš„æ´»åŠ¨
 	while (1)
 	{
 		printf("event %d is coming...\n", event);
 		FSM_EventHandle(&fsm, event);
 		printf("fsm current state %d\n", fsm.curState);
 		test(&event); 
-		Sleep(1);  //ĞİÃß1Ãë£¬·½±ã¹Û²ì
+		//sleep(1); //linux ä¸‹ä½¿ç”¨å°å†™çš„sleep
+		Sleep(1);  //ä¼‘çœ 1ç§’ï¼Œæ–¹ä¾¿è§‚å¯Ÿ
 	}
 
 	return 0;
